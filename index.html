@@ -214,7 +214,6 @@ async function submitExam(){
   document.getElementById("results").innerHTML=`<h3>Results</h3>
     <p>Score: ${score}/${total}</p>`;
 
-  // Send results to Formspree
   const formData=new FormData();
   formData.append("studentName",name);
   formData.append("grade",grade);
@@ -243,6 +242,36 @@ function insertImage(btn){
     reader.readAsDataURL(file);
   };
   input.click();
+}
+
+// === Signs Panel ===
+let activeInput = null;
+document.addEventListener("focusin", e=>{
+  if(e.target.tagName==="INPUT" || e.target.tagName==="TEXTAREA" || e.target.isContentEditable){
+    activeInput = e.target;
+  }
+});
+function toggleSigns(){
+  const panel=document.getElementById("signsPanel");
+  panel.style.display = panel.style.display==="block" ? "none" : "block";
+}
+function insertSign(sign){
+  if(!activeInput) return alert("Click inside a field or essay first!");
+  insertAt(activeInput, sign);
+}
+function insertAt(el, text){
+  el.focus();
+  if(el.isContentEditable){
+    let sel = window.getSelection(), range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(document.createTextNode(text));
+    range.collapse(false);
+    sel.removeAllRanges(); sel.addRange(range);
+  } else {
+    let start=el.selectionStart, end=el.selectionEnd;
+    el.value = el.value.slice(0,start) + text + el.value.slice(end);
+    el.selectionStart = el.selectionEnd = start+text.length;
+  }
 }
 </script>
 </body>
